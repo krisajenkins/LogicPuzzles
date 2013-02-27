@@ -14,9 +14,9 @@
   ([_ _ [x . tail]] (membero y tail))
   ([_ _ [_ . tail]] (lefto x y tail)))
 
-;; 1. Of Landon and Jason, one has the 7:30pm reservation and the
-;; other loves mozzarella.
-(defn rule-1 [answers]
+(defn rule-1
+  "Of Landon and Jason, one has the 7:30pm reservation and the other loves mozzarella."
+  [answers]
   (symbol-macrolet
    [_ (lvar)]
    (fresh [c1 r1 c2 r2]
@@ -28,13 +28,16 @@
            [(== r2 7.5)
             (== c1 :mozzarella)]))))
 
-;; 2. The blue cheese enthusiast subscribed to Fortune.
-(defn rule-2 [answers]
-  (fresh [p r]
-         (membero [p :fortune :blue-cheese r] answers)))
+(defn rule-2
+  "The blue cheese enthusiast subscribed to Fortune."
+  [answers]
+  (symbol-macrolet
+   [_ (lvar)]
+         (membero [_ :fortune :blue-cheese _] answers)))
 
-;; 3. The muenster enthusiast didn't subscribe to Vogue.
-(defn rule-3 [answers]
+(defn rule-3
+  "The muenster enthusiast didn't subscribe to Vogue."
+  [answers]
   (symbol-macrolet
    [_ (lvar)]
    (fresh [s1 s2]
@@ -44,10 +47,11 @@
           (membero s2 answers)
           (!= s1 s2))))
 
-;; 4. The 5 people were the Fortune subscriber, Landon, the person
-;; with a reservation at 5:00pm, the mascarpone enthusiast, and the
-;; Vogue subscriber.
-(defn rule-4 [answers]
+(defn rule-4
+  "The 5 people were the Fortune subscriber, Landon, the person with a
+   reservation at 5:00pm, the mascarpone enthusiast, and the Vogue
+   subscriber."
+  [answers]
   (symbol-macrolet
    [_ (lvar)]
    (permuteo [[_ :fortune _ _]
@@ -57,8 +61,9 @@
               [_ :vogue _ _]]
              answers)))
 
-;; 5. The person with a reservation at 5:00pm didn't subscribe to Time.
-(defn rule-5 [answers]
+(defn rule-5
+  "The person with a reservation at 5:00pm didn't subscribe to Time."
+  [answers]
   (symbol-macrolet
    [_ (lvar)]
    (fresh [s1 s2]
@@ -68,9 +73,9 @@
           (membero s2 answers)
           (!= s1 s2))))
 
-;; 6. The Cosmopolitan subscriber has an earlier reservation than the
-;; mascarpone enthusiast.
-(defn rule-6 [answers]
+(defn rule-6
+  "The Cosmopolitan subscriber has an earlier reservation than the mascarpone enthusiast."
+  [answers]
   (symbol-macrolet
    [_ (lvar)]
    (fresh [r1 r2]
@@ -78,8 +83,9 @@
           (membero [_ _ :mascarpone r2] answers)
           (lefto r1 r2 [5 6 7 7.5 8.5]))))
 
-;; 7. Bailey has a later reservation than the blue cheese enthusiast.
-(defn rule-7 [answers]
+(defn rule-7
+  "Bailey has a later reservation than the blue cheese enthusiast."
+  [answers]
   (symbol-macrolet
    [_ (lvar)]
    (fresh [r1 r2]
@@ -87,9 +93,10 @@
           (membero [:bailey _ _ r2] answers)
           (lefto r1 r2 [5 6 7 7.5 8.5]))))
 
-;; 8. Either the person with a reservation at 7:00pm or the person
-;; with a reservation at 7:30pm subscribed to Fortune.
-(defn rule-8 [answers]
+(defn rule-8
+  "Either the person with a reservation at 7:00pm or the person with a
+   reservation at 7:30pm subscribed to Fortune."
+  [answers]
   (symbol-macrolet
    [_ (lvar)]
    (fresh [r]
@@ -97,8 +104,9 @@
           (conde [(== r 7)]
                  [(== r 7.5)]))))
 
-;; 9. Landon has a later reservation than the Time subscriber.
-(defn rule-9 [answers]
+(defn rule-9
+  "Landon has a later reservation than the Time subscriber."
+  [answers]
   (symbol-macrolet
    [_ (lvar)]
    (fresh [r1 r2]
@@ -106,8 +114,9 @@
           (membero [:landon _ _ r2] answers)
           (lefto r1 r2 [5 6 7 7.5 8.5]))))
 
-;; 10. The Fortune subscriber is not Jamari.
-(defn rule-10 [answers]
+(defn rule-10
+  "The Fortune subscriber is not Jamari."
+  [answers]
   (symbol-macrolet
    [_ (lvar)]
    (fresh [s1 s2]
@@ -117,35 +126,36 @@
           (membero s2 answers)
           (!= s1 s2))))
 
-;; 11. The person with a reservation at 5:00pm loves mozzarella
-(defn rule-11 [answers]
+(defn rule-11
+  "The person with a reservation at 5:00pm loves mozzarella."
+  [answers]
   (symbol-macrolet
    [_ (lvar)]
    (membero [_ _ :mozzarella 5] answers)))
 
 (show
- (let [people       (repeatedly 5 lvar)
-       magazines    (repeatedly 5 lvar)
-       cheeses      (repeatedly 5 lvar)
-       reservations (repeatedly 5 lvar)
-       answers (map list people magazines cheeses reservations)]
-   (run 1 [q]
-        (== q answers)
-        (== people [:amaya :bailey :jamari :jason :landon])
-        (rule-1 answers)
-        (rule-2 answers)
-        (rule-3 answers)
-        (rule-4 answers)
-        (rule-5 answers)
-        (rule-6 answers)
-        (rule-7 answers)
-        (rule-8 answers)
-        (rule-9 answers)
-        (rule-10 answers)
-        (rule-11 answers)
-        (permuteo magazines [:fortune :time :cosmopolitan :us-weekly :vogue])
-        (permuteo cheeses [:asiago :blue-cheese :mascarpone :mozzarella :muenster])
-        (permuteo reservations [5 6 7 7.5 8.5]))))
+ (count (let [people       (repeatedly 5 lvar)
+        magazines    (repeatedly 5 lvar)
+        cheeses      (repeatedly 5 lvar)
+        reservations (repeatedly 5 lvar)
+        answers (map list people magazines cheeses reservations)]
+    (run* [q]
+          (== q answers)
+          (== people [:amaya :bailey :jamari :jason :landon])
+          (rule-1 answers)
+          (rule-2 answers)
+          (rule-3 answers)
+          (rule-4 answers)
+          (rule-5 answers)
+          (rule-6 answers)
+          (rule-7 answers)
+          (rule-8 answers)
+          (rule-9 answers)
+          (rule-10 answers)
+          (rule-11 answers)
+          (permuteo magazines [:fortune :time :cosmopolitan :us-weekly :vogue])
+          (permuteo cheeses [:asiago :blue-cheese :mascarpone :mozzarella :muenster])
+          (permuteo reservations [5 6 7 7.5 8.5])))))
 
 ;;; Time to (run 1 [q]): ~1s.
 ;;; Time to (run* [q]): ~16s.
